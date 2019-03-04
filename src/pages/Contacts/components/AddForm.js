@@ -3,6 +3,7 @@ import { Card,Icon, Form,Input,Button,Tooltip,Select,DatePicker,message  } from 
 import axios from 'axios';
 // import { getStakeholders } from '@/services/user';
 // import { specialAdd } from '@/services/special';
+import { userAdd } from '@/services/contacts';
 const { TextArea } = Input;
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -38,23 +39,25 @@ class AddFormView extends PureComponent{
         // })
     }
 
-    //项目提交
+    //数据提交
     handleSubmit = (e) =>{
         e.preventDefault();
         let _form = this.props.form;
         _form.validateFields((err, values) => {
             if (!err) {
-                // axios.post(specialAdd,{special:addModel,users:specialStakeholders}).then((res)=>{
-                //     const data = res.data;
-                //     if(data.status){
-                //         message.success('添加成功!');
-                //     }
-                //     else{
-                //         message.error('添加失败:' + data.message);
-                //     }
+               
+                axios.post(userAdd,{obj:values}).then((res)=>{
+                    debugger
+                    // const data = res.data;
+                    // if(data.status){
+                    //     message.success('添加成功!');
+                    // }
+                    // else{
+                    //     message.error('添加失败:' + data.message);
+                    // }
 
-                //     _form.resetFields();
-                // });
+                    // _form.resetFields();
+                });
             }
           });
 

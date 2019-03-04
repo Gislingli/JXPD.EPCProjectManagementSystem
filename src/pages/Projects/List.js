@@ -4,23 +4,24 @@ import axios from 'axios';
 import FilterData from './components/FilterData';
 import { Icon,Button,Card,Table,Divider,Popconfirm,message } from 'antd';
 import router from 'umi/router';
+import { ProjectList } from '@/services/projects';
 class List extends PureComponent{
     constructor(props){
         super(props);
         this.state={
             datasource:[
-                {
-                    ID:'533D8CBC-5190-4E1D-864B-003FB2AAE7F3',
-                    BidSectionId:'46B480F6-C0E9-4954-BAD7-00ADCB76B865',
-                    ProjectNumber:'48',
-                    ProjectName:'三水湾公园路',
-                    ProvinceCode:null,
-                    CityCode:null,
-                    DistrictCode:null,
-                    TownStreetCode:null,
-                    ConType:null,
-                    ConDes:null,
-            }
+            //     {
+            //         ID:'533D8CBC-5190-4E1D-864B-003FB2AAE7F3',
+            //         BidSectionId:'46B480F6-C0E9-4954-BAD7-00ADCB76B865',
+            //         ProjectNumber:'48',
+            //         ProjectName:'三水湾公园路',
+            //         ProvinceCode:null,
+            //         CityCode:null,
+            //         DistrictCode:null,
+            //         TownStreetCode:null,
+            //         ConType:null,
+            //         ConDes:null,
+            // }
         ]
         }
     }
@@ -314,16 +315,19 @@ handleDetails=(record)=>{
 }
     /*获取数据*/
     getData = () => {
-        axios.post(specialList).then((res) => {
-            debugger;
-            const data = res.data;
-            if(data.Status){
-                window.specialData = data.Data.list;
+        axios.post(ProjectList).then((res) => {
+   
+            if(res.data.Status){
                 this.setState({
-                    datasource:data.Data.list
+                    datasource:res.data.Data.Project
                 });
+             
             }
         })
+    }
+    componentDidMount=()=>{
+
+        this.getData();
     }
      /*渲染*/
     render(){
