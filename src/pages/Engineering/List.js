@@ -34,21 +34,11 @@ class List extends Component{
             },
             {
                 title:'区域',
-                dataIndex:'EngineeringArea',
-                key:'EngineeringArea'
+                dataIndex:'AreaName',
+                key:'AreaName'    
             },
             {
-                title:'业主单位',
-                dataIndex:'EngineeringOwner',
-                key:'EngineeringOwner'
-            },
-            {
-                title:'监理单位',
-                dataIndex:'EngineeringSupervisor',
-                key:'EngineeringSupervisor'
-            },
-            {
-                title:'合同价',
+                title:'投资金额',
                 dataIndex:'EngineeringInvest',
                 key:'EngineeringInvest'
             },
@@ -58,7 +48,7 @@ class List extends Component{
                 key:'EngineeringDate'
             },
             {
-                title:'工程负责',
+                title:'工程负责人',
                 dataIndex:'EngineeringLeader',
                 key:'EngineeringLeader'
             },
@@ -141,6 +131,9 @@ class List extends Component{
               children: [{
                 value: 'jianye',
                 label: '建业区',
+              },{
+                value: 'jiangning',
+                label: '江宁区',
               }],
             }],
           }];

@@ -122,7 +122,7 @@ export default [
         path:'/bidSection',
         name:'标段管理',
         icon:'snippets',
-        hideInMenu:false,
+        hideInMenu:true,
         routes:[
           {
             path:'/bidSection/list/:id',

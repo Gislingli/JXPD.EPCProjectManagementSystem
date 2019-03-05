@@ -14,7 +14,7 @@ class Details extends Component {
     super(props)
     this.state={
       enginneering:{},
-      stakeholders:{},
+      stakeholders:[],
       bidsections:[],
     }
     this.Id = this.props.match.params.id;
@@ -93,36 +93,29 @@ class Details extends Component {
 
 
   getData = () => {
-  //   axios.post(Get,{Id:this.Id}).then((res) => {
-  //     debugger;
-  //     if(res.data.Status){
-  //       let data = res.data.Data.EngineeringViewModel;
-  //       this.setState({
-  //         enginneering:data,
-  //         stakeholders:data.Relationships,  
-  //         bidsections:data.BidSectionViewModels,
-  //       })
-  //     }
-  //   })
-
-    const data = {Id:'7049E6B8-0769-4BAD-B25A-B8CCB8D7ACB5',EngineeringName:'背街小巷',EngineeringArea:'新嘉街道',EngineeringOwner:'南湖城投',EngineeringSupervisor:'南湖区住建局',EngineeringInvest:'512572.14',EngineeringDate:'2019/01/01-2020/02/02',EngineeringLeader:'韩冰'};
-    const sdata = {leader:'金明辉',designleader:'万学良',buildleader:'苏友富',members:['吴佳伟','吴杰','张云','徐超','王海奇','李龙','陈国军','董翰翔']};
-    const bdata = [
-      {Id:'1',BidSectionCode:3,BidSectionName:'新嘉三标段',BidSectionWork:'开工',BidSectionArea:'新嘉街道',PlanInvestmentAmount:31142.71,ContractAmount:56142.75,ActualInvestmentAmount:35225.35,InvestmentPercentage:'32.8%',BidSectionLeader:'金明辉'},
-      {Id:'2',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
-      {Id:'3',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
-      {Id:'4',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
-      {Id:'5',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
-      {Id:'6',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'}
-    ];
-
-    setTimeout(() => {
-      this.setState({
-        enginneering:data,
-        stakeholders:sdata,
-        bidsections:bdata,
-      })
+    axios.post(Get,{Id:this.Id}).then((res) => {
+      debugger;
+      if(res.data.Status){
+        let data = res.data.Data;
+        this.setState({
+          enginneering:data.EngineeringViewModel,
+          stakeholders:data.ItemRelationshipView.Persons,  
+          bidsections:data.EngineeringViewModel.BidSectionViewModels,
+        })
+      }
     })
+
+    // const data = {Id:'7049E6B8-0769-4BAD-B25A-B8CCB8D7ACB5',EngineeringName:'背街小巷',EngineeringArea:'新嘉街道',EngineeringOwner:'南湖城投',EngineeringSupervisor:'南湖区住建局',EngineeringInvest:'512572.14',EngineeringDate:'2019/01/01-2020/02/02',EngineeringLeader:'韩冰'};
+    // const sdata = {leader:'金明辉',designleader:'万学良',buildleader:'苏友富',members:['吴佳伟','吴杰','张云','徐超','王海奇','李龙','陈国军','董翰翔']};
+    // const bdata = [
+    //   {Id:'1',BidSectionCode:3,BidSectionName:'新嘉三标段',BidSectionWork:'开工',BidSectionArea:'新嘉街道',PlanInvestmentAmount:31142.71,ContractAmount:56142.75,ActualInvestmentAmount:35225.35,InvestmentPercentage:'32.8%',BidSectionLeader:'金明辉'},
+    //   {Id:'2',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
+    //   {Id:'3',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
+    //   {Id:'4',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
+    //   {Id:'5',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
+    //   {Id:'6',BidSectionCode:1,BidSectionName:'建设一标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'}
+    // ];
+
   }
 
   componentDidMount = () =>{
@@ -168,9 +161,9 @@ class Details extends Component {
         </Card>
         <Card title={<h4><Icon type="team" style={{marginRight:'10px'}}/>参与人员</h4>} style={{ margin: '15px 0' }}>
           <DescriptionList>
-            <Description term='工程负责人'>{this.state.stakeholders.filter(o=>o.RelationshipName=='工程负责人').length>0?this.state.stakeholders.filter(o=>o.RelationshipName=='工程负责人')[0].AttachName:'暂无'}</Description>
-            <Description term='设计总监'>{this.state.stakeholders.filter(o=>o.RelationshipName=='设计总监').length>0?this.state.stakeholders.filter(o=>o.RelationshipName=='设计总监')[0].AttachName:'暂无'}</Description>
-            <Description term='施工总监'>{this.state.stakeholders.filter(o=>o.RelationshipName=='施工总监').length>0?this.state.stakeholders.filter(o=>o.RelationshipName=='施工总监')[0].AttachName:'暂无'}</Description>
+            <Description term='工程负责人'>{this.state.stakeholders.filter(o=>o.RelationshipType=='工程负责人').length>0?this.state.stakeholders.filter(o=>o.RelationshipType=='工程负责人')[0].Name:'暂无'}</Description>
+            <Description term='设计总监'>{this.state.stakeholders.filter(o=>o.RelationshipType=='设计总监').length>0?this.state.stakeholders.filter(o=>o.RelationshipType=='设计总监')[0].Name:'暂无'}</Description>
+            <Description term='施工总监'>{this.state.stakeholders.filter(o=>o.RelationshipType=='施工总监').length>0?this.state.stakeholders.filter(o=>o.RelationshipType=='施工总监')[0].Name:'暂无'}</Description>
           </DescriptionList>
           <DescriptionList style={{ margin: '12px 0' }} col="1">
               <Description term="其他成员">

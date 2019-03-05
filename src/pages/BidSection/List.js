@@ -1,7 +1,7 @@
 import React,{ Component } from 'react';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { Icon,Input,InputNumber,Button,Card,Table,Divider,Popconfirm,message,Row,Col,Cascader,DatePicker } from 'antd';
-import { bidSectionsQuery,bidSectionDelete } from '@/services/bidSection';
+import { GetListByEngineering,Delete } from '@/services/bidSection';
 import router from 'umi/router';
 import axios from 'axios';
 import styles from './List.less';
@@ -68,11 +68,6 @@ class List extends Component{
               key:'InvestmentPercentage'
             },
             {
-              title:'标段负责人',
-              dataIndex:'BidSectionLeader',
-              key:'BidSectionLeader'
-            },
-            {
               title:'操作',
               key:'action',
               render:(text,record) => (
@@ -101,27 +96,22 @@ class List extends Component{
 
     //获取数据
     getData = () => {
-        // axios.post(bidSectionsQuery,{}).then(res => {
-        //     debugger;
-        //     const data = res.data;
-        //     if(data.Status){
-        //         window.bidData = data.Data.bidSections;
-        //         this.setState({
-        //             datasource:data.Data.bidSections
-        //         });
-        //     }
-        // })
+        axios.post(GetListByEngineering,{engineeringId:this.Id}).then(res => {
+            debugger;
+            const data = res.data;
+            if(data.Status){
+                this.setState({
+                    datasource:data.Data.BidSection
+                });
+            }
+        })
 
-      const bidsectionData = [
-        {Id:'5',BidSectionCode:1,BidSectionName:'建设二标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
-        {Id:'6',BidSectionCode:1,BidSectionName:'建设四标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'}
-      ];
+      // const bidsectionData = [
+      //   {Id:'5',BidSectionCode:1,BidSectionName:'建设二标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'},
+      //   {Id:'6',BidSectionCode:1,BidSectionName:'建设四标段',BidSectionWork:'施工图',BidSectionArea:'建设街道',PlanInvestmentAmount:11132.11,ContractAmount:86542.25,ActualInvestmentAmount:15425.15,InvestmentPercentage:'17.5%',BidSectionLeader:'苏友富'}
+      // ];
 
-      setTimeout(()=>{
-          this.setState({
-            bidsectionData:bidsectionData
-          })
-      },1000);
+      
     }
 
     //查询工程名称
@@ -248,7 +238,7 @@ class List extends Component{
                       size='small'
                       rowKey={record => record.Id}
                       columns={this.Cols}
-                      dataSource={this.state.bidsectionData}
+                      dataSource={this.state.datasource}
                   >
                   </Table>
                 </Card>
