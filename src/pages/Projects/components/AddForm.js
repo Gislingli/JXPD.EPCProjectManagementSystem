@@ -317,7 +317,7 @@ class AddFormView extends PureComponent{
                     >
                         {getFieldDecorator('IdeaDate',{
                             rules:[{type: 'object',required:false}]
-                        })(<DatePicker />)}
+                        })(<Input />)}
                     </FormItem> 
                     <FormItem
                         {...formItemLayout}
@@ -325,7 +325,7 @@ class AddFormView extends PureComponent{
                     >
                         {getFieldDecorator('PlanDate',{
                             rules:[{type: 'object',required:false}]
-                        })(<DatePicker />)}
+                        })(<Input />)}
                     </FormItem>
                     <FormItem
                         {...formItemLayout}
@@ -333,7 +333,7 @@ class AddFormView extends PureComponent{
                     >
                         {getFieldDecorator('SetupDate',{
                             rules:[{type: 'object',required:false}]
-                        })(<DatePicker />)}
+                        })(<Input />)}
                     </FormItem>
                     <FormItem
                         {...formItemLayout}
@@ -341,7 +341,7 @@ class AddFormView extends PureComponent{
                     >
                         {getFieldDecorator('DesignDate',{
                             rules:[{type: 'object',required:false}]
-                        })(<DatePicker />)}
+                        })(<Input />)}
                     </FormItem>
                     <FormItem
                         {...formItemLayout}
@@ -349,7 +349,7 @@ class AddFormView extends PureComponent{
                     >
                         {getFieldDecorator('BidDate',{
                             rules:[{type: 'object',required:false}]
-                        })(<DatePicker />)}
+                        })(<Input />)}
                     </FormItem> 
                     <FormItem
                         {...formItemLayout}
@@ -357,7 +357,7 @@ class AddFormView extends PureComponent{
                     >
                         {getFieldDecorator('ConStartDate',{
                             rules:[{type: 'object',required:false}]
-                        })(<DatePicker />)}
+                        })(<Input />)}
                     </FormItem> 
                     <FormItem
                         {...formItemLayout}
@@ -365,7 +365,7 @@ class AddFormView extends PureComponent{
                     >
                         {getFieldDecorator('ConEndDate',{
                             rules:[{type: 'object',required:false}]
-                        })(<DatePicker />)}
+                        })(<Input />)}
                     </FormItem>
                     <FormItem
                         {...formItemLayout}
@@ -373,7 +373,7 @@ class AddFormView extends PureComponent{
                     >
                         {getFieldDecorator('CheckDate',{
                             rules:[{type: 'object',required:false}]
-                        })(<DatePicker />)}
+                        })(<Input />)}
                     </FormItem> 
                     <FormItem
                         {...formItemLayout}

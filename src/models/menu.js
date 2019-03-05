@@ -99,8 +99,8 @@ export default {
     *getMenuData({ payload }, { put }) {
       const { routes, authority } = payload;
       const menuData = filterMenuData(memoizeOneFormatter(routes, authority));
-      // const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(menuData);
-      const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(memoizeOneFormatter(routes, authority)); //这是修改后的代码，因为menuData是已经过滤掉存在hideInMenu
+      const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(menuData);
+      // const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(memoizeOneFormatter(routes, authority)); //这是修改后的代码，因为menuData是已经过滤掉存在hideInMenu
       yield put({
         type: 'save',
         payload: { menuData, breadcrumbNameMap },

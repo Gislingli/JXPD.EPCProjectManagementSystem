@@ -10,19 +10,7 @@ class List extends PureComponent{
         super(props);
         this.state={
             datasource:[
-            //     {
-            //         ID:'533D8CBC-5190-4E1D-864B-003FB2AAE7F3',
-            //         BidSectionId:'46B480F6-C0E9-4954-BAD7-00ADCB76B865',
-            //         ProjectNumber:'48',
-            //         ProjectName:'三水湾公园路',
-            //         ProvinceCode:null,
-            //         CityCode:null,
-            //         DistrictCode:null,
-            //         TownStreetCode:null,
-            //         ConType:null,
-            //         ConDes:null,
-            // }
-        ]
+        ],loading:true
         }
     }
      /*表头*/
@@ -47,30 +35,30 @@ class List extends PureComponent{
                     dataIndex:'ProjectName',
                     key:'ProjectName', 
                     fixed: 'left',
-                    width: 100
+                    width: 200
                 },
                 {
                     title:'省级区域',
-                    dataIndex:'ProvinceCode',
-                    key:'ProvinceCode',
+                    dataIndex:'ProvinceName',
+                    key:'ProvinceName',
                     width: 100
                 },
                 {
                     title:'市级区域',
-                    dataIndex:'CityCode',
-                    key:'CityCode',
+                    dataIndex:'CityName',
+                    key:'CityName',
                     width: 100
                 },
                 {
                     title:'区县级区域',
-                    dataIndex:'DistrictCode',
-                    key:'DistrictCode',
+                    dataIndex:'DistrictName',
+                    key:'DistrictName',
                     width: 100
                 },
                 {
                     title:'镇街道级区域',
-                    dataIndex:'TownStreetCode',
-                    key:'TownStreetCode',
+                    dataIndex:'TownStreetName',
+                    key:'TownStreetName',
                     width: 100
                 },
                 {
@@ -78,84 +66,86 @@ class List extends PureComponent{
                     dataIndex:'ConType',
                     key:'ConType',
                     width: 100
-                },
-                {
-                    title:'建设规模描述',
-                    dataIndex:'ConDes',
-                    key:'ConDes'
-                    ,
-                    width: 200
-                },
-                {
-                    title:'面积（平方米）',
-                    dataIndex:'Areas',
-                    key:'Areas'
-                    ,
-                    width: 115
-                },
-                {
-                    title:'户数',
-                    dataIndex:'HouseHolds',
-                    key:'HouseHolds'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'人口数',
-                    dataIndex:'PersonCount',
-                    key:'PersonCount'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'起点',
-                    dataIndex:'StartingPoint',
-                    key:'StartingPoint'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'终点',
-                    dataIndex:'EndingPoint',
-                    key:'EndingPoint'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'长度',
-                    dataIndex:'Length',
-                    key:'Length'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'车行道宽度',
-                    dataIndex:'DriveWidth',
-                    key:'DriveWidth'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'人行道宽度',
-                    dataIndex:'FootwalkWidth',
-                    key:'FootwalkWidth'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'车行道面积',
-                    dataIndex:'DriveAreas',
-                    key:'DriveAreas'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'人行道面积',
-                    dataIndex:'FootwalkAreas',
-                    key:'FootwalkAreas'
-                    ,
-                    width: 100
-                },
+                }
+                // ,
+                // {
+                //     title:'建设规模描述',
+                //     dataIndex:'ConDes',
+                //     key:'ConDes'
+                //     ,
+                //     width: 200
+                // },
+                // {
+                //     title:'面积（平方米）',
+                //     dataIndex:'Areas',
+                //     key:'Areas'
+                //     ,
+                //     width: 115
+                // },
+                // {
+                //     title:'户数',
+                //     dataIndex:'HouseHolds',
+                //     key:'HouseHolds'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'人口数',
+                //     dataIndex:'PersonCount',
+                //     key:'PersonCount'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'起点',
+                //     dataIndex:'StartingPoint',
+                //     key:'StartingPoint'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'终点',
+                //     dataIndex:'EndingPoint',
+                //     key:'EndingPoint'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'长度',
+                //     dataIndex:'Length',
+                //     key:'Length'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'车行道宽度',
+                //     dataIndex:'DriveWidth',
+                //     key:'DriveWidth'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'人行道宽度',
+                //     dataIndex:'FootwalkWidth',
+                //     key:'FootwalkWidth'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'车行道面积',
+                //     dataIndex:'DriveAreas',
+                //     key:'DriveAreas'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'人行道面积',
+                //     dataIndex:'FootwalkAreas',
+                //     key:'FootwalkAreas'
+                //     ,
+                //     width: 100
+                // }
+                ,
                 {
                     title:'投资估算',
                     dataIndex:'Investment',
@@ -192,85 +182,87 @@ class List extends PureComponent{
                     key:'ConContent'
                     ,
                     width: 200
-                },
-                {
-                    title:'实施主体',
-                    dataIndex:'ConDepart',
-                    key:'ConDepart'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'建设性质',
-                    dataIndex:'ConProperty',
-                    key:'ConProperty'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'谋划时间',
-                    dataIndex:'IdeaDate',
-                    key:'IdeaDate'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'规划时间',
-                    dataIndex:'PlanDate',
-                    key:'PlanDate'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'立项时间',
-                    dataIndex:'SetupDate',
-                    key:'SetupDate'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'计划设计时间',
-                    dataIndex:'DesignDate',
-                    key:'DesignDate'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'计划招投标时间',
-                    dataIndex:'BidDate',
-                    key:'BidDate'
-                    ,
-                    width: 100
-                },
+                }
+                // ,
+                // {
+                //     title:'实施主体',
+                //     dataIndex:'ConDepart',
+                //     key:'ConDepart'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'建设性质',
+                //     dataIndex:'ConProperty',
+                //     key:'ConProperty'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'谋划时间',
+                //     dataIndex:'IdeaDate',
+                //     key:'IdeaDate'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'规划时间',
+                //     dataIndex:'PlanDate',
+                //     key:'PlanDate'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'立项时间',
+                //     dataIndex:'SetupDate',
+                //     key:'SetupDate'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'计划设计时间',
+                //     dataIndex:'DesignDate',
+                //     key:'DesignDate'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'计划招投标时间',
+                //     dataIndex:'BidDate',
+                //     key:'BidDate'
+                //     ,
+                //     width: 100
+                // },
 
-                {
-                    title:'计划施工开始时间',
-                    dataIndex:'ConStartDate',
-                    key:'ConStartDate'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'计划施工结束时间',
-                    dataIndex:'ConEndDate',
-                    key:'ConEndDate'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'计划竣工验收时间',
-                    dataIndex:'CheckDate',
-                    key:'CheckDate'
-                    ,
-                    width: 100
-                },
-                {
-                    title:'备注',
-                    dataIndex:'Remark',
-                    key:'Remark'
-                    ,
-                    width: 200
-                },
+                // {
+                //     title:'计划施工开始时间',
+                //     dataIndex:'ConStartDate',
+                //     key:'ConStartDate'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'计划施工结束时间',
+                //     dataIndex:'ConEndDate',
+                //     key:'ConEndDate'
+                //     ,
+                //     width: 100
+                // },
+                // {
+                //     title:'计划竣工验收时间',
+                //     dataIndex:'CheckDate',
+                //     key:'CheckDate'
+                //     ,
+                //     width: 100
+                // }
+                ,
+                // {
+                //     title:'备注',
+                //     dataIndex:'Remark',
+                //     key:'Remark'
+                //     ,
+                //     width: 200
+                // },
                 {
                     title:'图面显示',
                     dataIndex:'ImageView',
@@ -310,7 +302,7 @@ handleDelete=(record)=>{
 }
 handleDetails=(record)=>{
 
-    const ID = record.ID;
+    const ID = record.Id;
         router.push('/projects/list/details/'+ID)
 }
     /*获取数据*/
@@ -319,9 +311,10 @@ handleDetails=(record)=>{
    
             if(res.data.Status){
                 this.setState({
-                    datasource:res.data.Data.Project
+                    datasource:res.data.Data.ProjectViewModel,
+                    loading:false
                 });
-             
+                
             }
         })
     }
@@ -346,7 +339,8 @@ handleDetails=(record)=>{
             <FilterData formProjectByName = {this.formProjectByName.bind(this)}/>
                         <Card>
                     <Table
-                        scroll={{ x: 3200}}
+                        loading={this.state.loading}
+                        scroll={{ x: 2000,y: 400}}
                         columns={this.tableCols()}
                         dataSource={this.state.datasource}
                     >

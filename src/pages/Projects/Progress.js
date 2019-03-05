@@ -1,16 +1,18 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent,Fragment } from 'react';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import { Icon,Button,Card,Table,Divider,Popconfirm,message,Row,Col } from 'antd';
+import { Icon,Button,Card,Table,Divider,Popconfirm,message,Row,Col,Modal } from 'antd';
 import DescriptionList from '@/components/DescriptionList';
+import AddFormForProgressPay from './components/AddFormForProgressPay';
+import AddFormForProgress from './components/AddFormForProgress';
 import { Chart } from "react-google-charts";
 const { Description } = DescriptionList;
 class Progress extends PureComponent{
     constructor(props){
         super(props);
         this.state={
-            datasource:[
-               
-        ]
+            datasource:[],
+            visible:false,
+            payVisible:true,
         }
     }
     tableCols = () => {
@@ -48,8 +50,8 @@ class Progress extends PureComponent{
                 },
                 {
                     title:'实际时间',
-                    dataIndex:'AdjustPlanTime',
-                    key:'AdjustPlanTime'
+                    dataIndex:'ActualTime',
+                    key:'ActualTime'
                 },
                 {
                     title:'进度状况',
@@ -63,21 +65,64 @@ class Progress extends PureComponent{
                 },
             ]
     }
+    PaymenttableCols = () => {
+        return [
+                {
+                    title:'序号',
+                    width: 80,
+                    dataIndex:'ID',
+                    render:(text,record,index) => `${index + 1}`
+                },
+                {
+                    title:'记录时间',
+                    dataIndex:'RecordTime',
+                    key:'RecordTime'
+                },
+                {
+                    title:'记录人',
+                    dataIndex:'RecordPerson',
+                    key:'RecordPerson'
+                },
+                {
+                    title:'备注',
+                    dataIndex:'Remark',
+                    key:'Remark'
+                },
+                {
+                    title:'支付金额',
+                    dataIndex:'PayValue',
+                    key:'PayValue'
+                }
+            ]
+    }
+    changeFrom =(v)=>{
+            if (v=="pay")this.setState({payVisible:true});else this.setState({payVisible:false});
+    }
     render(){
+
         return(
             <PageHeaderWrapper
-                title='进程管理'
+            title='项目清单'
+            action={
+                <Fragment>
+                    <Button type="primary" onClick={()=>{this.setState({visible:true});this.changeFrom('pay')}}>
+                        <Icon type="plus" />进度款新增
+                    </Button>
+                    <Button type="primary" onClick={()=>{this.setState({visible:true});this.changeFrom('progress')}}>
+                    <Icon type="plus" />进度新增
+                    </Button>
+                </Fragment>
+            }
             >
              <Card title='进度款情况' style={{ margin: '15px 0' }}>
-                <DescriptionList>
-                    <Description term='记录时间'>2016.12.2</Description>
-                    <Description term='记录人'>大帅哥</Description>
-                    <Description term='备注'>浙江</Description>
-                    <Description term='支付金额'>10000</Description>
-                </DescriptionList>
+             <Table
+                        columns={this.PaymenttableCols()}
+                        dataSource={this.state.datasource}
+                    >
+                    </Table>
                 
             </Card>
-            <Card>
+            <Card title='进度情况'>
                     <Table
                         columns={this.tableCols()}
                         dataSource={this.state.datasource}
@@ -85,7 +130,7 @@ class Progress extends PureComponent{
                     </Table>
 
                 </Card>
-                <Card style={{ margin: '15px 0' }}>
+                <Card title='进度情况甘特图' style={{ margin: '15px 0' }}>
                 <Chart
   width={'100%'}
   height={'200px'}
@@ -115,7 +160,17 @@ class Progress extends PureComponent{
   rootProps={{ 'data-testid': '10' }}
 />
                 </Card>
-               
+                <Modal
+          title="新增"
+          visible={this.state.visible}
+          footer={null}
+          onCancel={()=>{this.setState({visible:false})}}
+          destroyOnClose
+          width={700}
+        >
+        {this.state.payVisible?(<AddFormForProgressPay/>):(<AddFormForProgress/>)}
+            
+        </Modal>
             </PageHeaderWrapper>
         )
     }

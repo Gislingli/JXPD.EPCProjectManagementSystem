@@ -5,29 +5,60 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const { RangePicker } = DatePicker;
 
-const residences = [{
-    value: 'zhejiang',
-    label: 'Zhejiang',
+const areaData = [{
+  value: 'zhejiang',
+  label: '浙江',
+  children: [{
+    value: 'hangzhou',
+    label: '杭州',
     children: [{
-      value: 'hangzhou',
-      label: 'Hangzhou',
-      children: [{
-        value: 'xihu',
-        label: 'West Lake',
-      }],
+      value: 'xihu',
+      label: '西湖区',
     }],
-  }, {
-    value: 'jiangsu',
-    label: 'Jiangsu',
+  },
+  {
+      value: 'jiaxing',
+      label: '嘉兴',
+      children: [{
+          value: 'nanhu',
+          label: '南湖区',
+          children: [{
+              value: 'jianshe',
+              label: '建设街道',
+            },
+            {
+              value: 'jianshe',
+              label: '新嘉街道',
+            }],
+      },
+      {
+          value: 'xiuzhou',
+          label: '秀洲区',
+      },
+      {
+          value: 'haining',
+          label: '海宁市',
+      },
+      {
+          value: 'pinghu',
+          label: '平湖市',
+      }],
+  }],
+}, {
+  value: 'jiangsu',
+  label: '江苏',
+  children: [{
+    value: 'nanjing',
+    label: '南京',
     children: [{
-      value: 'nanjing',
-      label: 'Nanjing',
-      children: [{
-        value: 'zhonghuamen',
-        label: 'Zhong Hua Men',
-      }],
+      value: 'jianye',
+      label: '建业区',
+    },{
+      value: 'jiangning',
+      label: '江宁区',
     }],
-  }];
+  }],
+}];
 
 class FilterDataForm extends PureComponent{
     constructor(props){
@@ -82,7 +113,7 @@ class FilterDataForm extends PureComponent{
             initialValue: ['zhejiang', 'hangzhou', 'xihu'],
             rules: [{ type: 'array', required: false}],
           })(
-            <Cascader options={residences}  width={{width:'250px'}}/>
+            <Cascader options={areaData}  width={{width:'250px'}}/>
           )}
         </Form.Item>
                     <FormItem>
