@@ -3,7 +3,7 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { Card,Icon, Row,Col,Button,Steps,Table } from 'antd';
 import axios from 'axios';
 import DescriptionList from '@/components/DescriptionList';
-import { bidSectionQuery } from '@/services/bidSection';
+import { Get } from '@/services/bidSection';
 import { workStageList } from '@/services/workstage';
 import bidLogo from '@/assets/tags.png';
 import router from 'umi/router';
@@ -17,8 +17,7 @@ class Details extends PureComponent{
         super(props);
         this.state={
             bidSection:{},
-            courtProjects:[],
-            roadProjects:[],
+            projects:[],
             workStage:[],
         }
         this.Id = this.props.match.params.id;
@@ -39,19 +38,34 @@ class Details extends PureComponent{
             key:'ProjectlName'
         },
         {
-            title:'竣工日期',
-            dataIndex:'CompletedDate',
-            key:'CompletedDate'
+            title:'所在区域',
+            dataIndex:'AreaName',
+            key: 'AreaName'
+        },
+        {
+            title:'建设类型',
+            dataIndex:'ImageView',
+            key:'ImageView'
+        },
+        {
+            title:'实施主体',
+            dataIndex:'ConDepart',
+            key:'ConDepart'
         },
         {
             title:'投资估算',
-            dataIndex:'ProjectAmount',
-            key:'ProjectAmount'
+            dataIndex:'Investment',
+            key:'Investment'
         },
         {
             title:'合同金额',
             dataIndex:'ContractAmount',
             key:'ContractAmount'
+        },
+        {
+            title:'实际投入',
+            dataIndex: 'ActualValue',
+            key: 'ActualValue'
         },
         {
             title:'操作',
@@ -65,42 +79,31 @@ class Details extends PureComponent{
     }
 
     getData = () =>{
-        let _self = this;
-        axios.post(bidSectionQuery,{Id: _self.Id}).then(res => {
+        axios.post(Get,{Id: this.Id}).then(res => {
+            debugger;
             let data = res.data;
-            if(data.Status == 'true'){
+            if(data.Status){
                 let detail = data.Data;
-                let courts = [];
-                let roads = [];
+                let Projects = [];
 
-                detail.courtProjects.map((item) => {
+                detail.BidSectionViewModel.Projects.map((item) => {
                     let rowdata = {
-                        ID:item.ID,
+                        ID:item.Id,
                         ProjectNumber: item.ProjectNumber,
                         ProjectName: item.ProjectName,
-                        CompletedDate: item.CheckDate,
-                        ProjectAmount: item.Investment,
-                        ContractAmount: item.ContractAmount,
+                        AreaName: item.AreaName,
+                        ImageView: item.ImageView,
+                        ConDepart: item.ConDepart,
+                        Investment: item.Investment,
+                        ContractValue: item.ContractValue,
+                        ActualValue: item.ActualValue,
                     }
-                    courts.push(rowdata);
+                    Projects.push(rowdata);
                 });
 
-                detail.roadProjects.map((item) => {
-                    let rowdata = {
-                        ID:item.ID,
-                        ProjectNumber: item.ProjectNumber,
-                        ProjectName: item.RoadName,
-                        CompletedDate: item.CheckDate,
-                        ProjectAmount: item.Investment,
-                        ContractAmount: item.ContractAmount,
-                    }
-                    roads.push(rowdata);
-                });
-
-                _self.setState({
-                    bidSection:detail.bidSection,
-                    courtProjects:courts,
-                    roadProjects:roads
+                this.setState({
+                    bidSection:detail.BidSectionViewModel,
+                    projects:Projects,
                 })
                 
             }
@@ -154,7 +157,7 @@ class Details extends PureComponent{
     }
     componentDidMount = () =>{
         this.getData();
-        this.getProps();
+        //this.getProps();
     }
 
     render(){
@@ -206,14 +209,15 @@ class Details extends PureComponent{
                     <DescriptionList>
                         <Description term='标段序号'>{this.state.bidSection.BidSectionCode}</Description>
                         <Description term='标段名称'>{this.state.bidSection.BidSectionName}</Description>
-                        <Description term='所属街道'>{this.state.bidSection.Street}</Description>
-                        <Description term='投资估算'>{this.state.bidSection.Invest}</Description>
+                        <Description term='所属区域'>{this.state.bidSection.AreaName}</Description>
+                        <Description term='投资估算'>{this.state.bidSection.PlanInvestmentAmount}</Description>
                         <Description term='合同金额'>{this.state.bidSection.ContractAmount}</Description>
+                        <Description term='实际投入'>{this.state.bidSection.ActualInvestmentAmount}</Description>
                         <Description term='投资进度'>{this.state.bidSection.ContractAmountPercentage + '%'}</Description>
                     </DescriptionList>
                     <DescriptionList style={{ margin: '12px 0' }} col="1">
                         <Description term="范围描述">
-                            {this.state.bidSection.ScopeDesc}
+                            {this.state.bidSection.Remark}
                         </Description>
                     </DescriptionList>
                 </Card>
@@ -247,12 +251,21 @@ class Details extends PureComponent{
                         <Description term='专职安全员'>{this.state.bidSection.BuilderSecurity}</Description>
                     </DescriptionList>
                 </Card>
-                <Card  title={<h4><Icon type="copy" style={{marginRight:'10px'}}/>项目清单</h4>} style={{ margin: '15px 0' }}>
+                <Card  
+                    title={<h4><Icon type="copy" style={{marginRight:'10px'}}/>项目清单</h4>} 
+                    style={{ margin: '15px 0' }}
+                    extra={
+                        <Button type='primary' size='small' onClick={()=>{router.push('/projects/list/'+this.Id)}}>
+                          <Icon type="ellipsis" />
+                          查看全部
+                        </Button>
+                      }
+                >
                     <Table
                         size='small'
                         rowKey={record => record.ID}
                         columns={this.projectCols}
-                        dataSource={this.state.courtProjects}
+                        dataSource={this.state.projects}
                     >
                     </Table>                     
                 </Card>
