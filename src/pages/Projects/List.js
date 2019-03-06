@@ -38,29 +38,12 @@ class List extends PureComponent{
                     width: 200
                 },
                 {
-                    title:'省级区域',
-                    dataIndex:'ProvinceName',
-                    key:'ProvinceName',
-                    width: 100
+                    title:'位置区域',
+                    dataIndex:'AreaName',
+                    key:'AreaName',
+                    width: 350
                 },
-                {
-                    title:'市级区域',
-                    dataIndex:'CityName',
-                    key:'CityName',
-                    width: 100
-                },
-                {
-                    title:'区县级区域',
-                    dataIndex:'DistrictName',
-                    key:'DistrictName',
-                    width: 100
-                },
-                {
-                    title:'镇街道级区域',
-                    dataIndex:'TownStreetName',
-                    key:'TownStreetName',
-                    width: 100
-                },
+
                 {
                     title:'建设分类',
                     dataIndex:'ConType',
@@ -302,8 +285,8 @@ handleDelete=(record)=>{
 }
 handleDetails=(record)=>{
 
-    const ID = record.Id;
-        router.push('/projects/list/details/'+ID)
+debugger
+    router.push('/projects/list/details/'+record.Id)
 }
     /*获取数据*/
     getData = () => {
@@ -311,7 +294,7 @@ handleDetails=(record)=>{
    
             if(res.data.Status){
                 this.setState({
-                    datasource:res.data.Data.ProjectViewModel,
+                    datasource:res.data.Data.ProjectPlainViewModel,
                     loading:false
                 });
                 
@@ -340,7 +323,7 @@ handleDetails=(record)=>{
                         <Card>
                     <Table
                         loading={this.state.loading}
-                        scroll={{ x: 2000,y: 400}}
+                        scroll={{ x: 1895,y: 400}}
                         columns={this.tableCols()}
                         dataSource={this.state.datasource}
                     >
