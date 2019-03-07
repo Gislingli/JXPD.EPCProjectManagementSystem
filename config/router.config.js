@@ -100,18 +100,18 @@ export default [
             component:'./Engineering/List'
           },
           {
-            path:'/engineering/add',
+            path:'/engineering/list/add',
             name:'工程新增',
             component:'./Engineering/Add'
           },
           {
-            path:'/engineering/details/:id',
+            path:'/engineering/list/details/:id',
             name:'工程详情',
             component:'./Engineering/Details',
             hideInMenu:true
           },
           {
-            path:'/engineering/edit/:id',
+            path:'/engineering/list/edit/:id',
             name:'工程编辑',
             component:'./Engineering/Edit',
             hideInMenu:true
@@ -135,7 +135,7 @@ export default [
             component:'./BidSection/Add'
           },
           {
-            path:'/bidSection/details/:id',
+            path:'/bidSection/list/details/:id',
             name:'标段详情',
             component:'./BidSection/Details',
           },

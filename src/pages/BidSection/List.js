@@ -136,7 +136,7 @@ class List extends Component{
     //详情
     handleDetails = (record) =>{
         const Id = record.Id;
-        router.push('/bidSection/details/'+Id);
+        router.push('/bidSection/list/details/'+Id);
     }
 
     //删除
