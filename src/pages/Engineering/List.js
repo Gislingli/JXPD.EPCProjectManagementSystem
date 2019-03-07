@@ -146,7 +146,7 @@ class List extends Component{
             debugger;
             let result = res.data;
             if(result.Status){
-                const data = result.Data.EngineeringViewModel;
+                const data = result.Data.EngineeringPlainViewModel;
                 this.setState({
                     datasource:data,
                     area:areaData
@@ -180,7 +180,7 @@ class List extends Component{
     handleDetails = (record) => {
         console.log(record)
         const Id = record.Id;
-        router.push('/engineering/details/'+Id)
+        router.push('/engineering/list/details/'+Id)
     }
 
     //删除
@@ -244,7 +244,7 @@ class List extends Component{
         const titleContent = (
             <div>
                 <label>工程清单</label>
-                <Button type="primary" style={{float:'right'}} onClick={()=>{router.push('/engineering/add')}}>
+                <Button type="primary" style={{float:'right'}} onClick={()=>{router.push('/engineering/list/add')}}>
                     <Icon type="plus" />工程新增
                 </Button>
             </div>

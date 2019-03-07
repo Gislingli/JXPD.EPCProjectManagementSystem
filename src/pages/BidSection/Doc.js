@@ -1,7 +1,8 @@
 import React,{ PureComponent, Fragment } from 'react';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { Upload, Button, Icon, message, Card, Table, Divider, Popconfirm, Modal, Select, Row, Col, Form, Input } from 'antd';
-import { addFiles,deleteFiles,QueryFiles} from '../../services/bidSection';
+import { QueryModelByCode } from '@/services/module';
+import { GetModuleData,UploadFiles } from '@/services/bidSectionDoc';
 import axios from 'axios';
 
 function GetDateFormat(str) { 
@@ -17,10 +18,13 @@ class Doc extends PureComponent{
             datasource:[],
             DocModules:[],
             FixedFiles:[],
+            fileList: [],
+            selectCode:'',
             uploading: false,
             visible:false,
         }
         this.Id = this.props.match.params.id;
+        this.getData = this.getData.bind(this);
         this.tableCols=[
             {
                 title:'序号',
@@ -30,23 +34,18 @@ class Doc extends PureComponent{
             },
             {
                 title:'文件类型',
-                dataIndex:'FileType',
-                key:'FileType'
+                dataIndex:'ModuleName',
+                key:'ModuleName'
             },
             {
                 title:'文件名称',
-                dataIndex:'FileName',
-                key:'FileName'
+                dataIndex:'FileOriginalName',
+                key:'FileOriginalName'
             },
             {
                 title:'文件说明',
-                dataIndex:'Remark',
-                key:'Remark'
-            },
-            {
-                title:'文件格式',
-                dataIndex:'FileExtension',
-                key:'FileExtension'
+                dataIndex:'FileRemark',
+                key:'FileRemark'
             },
             {
                 title:'上传人员',
@@ -56,10 +55,7 @@ class Doc extends PureComponent{
             {
                 title:'上传时间',
                 dataIndex:'LoadDate',
-                key:'LoadDate',
-                render:(text) => {
-                    return GetDateFormat(text)
-                }
+                key:'LoadDate'
             },
             {
                 title:'操作',
@@ -71,12 +67,12 @@ class Doc extends PureComponent{
                                 <Icon type="download" />下载
                             </a>
                         </Popconfirm>
-                        <Divider type="vertical" />
+                        {/* <Divider type="vertical" />
                         <Popconfirm title="确定删除?" onConfirm={this.handleDeleteBid.bind(this,record)}>
                             <a href="javascript:;">
                                 <Icon type="delete" />删除
                             </a>
-                        </Popconfirm>
+                        </Popconfirm> */}
                     </span>
                 )
             }
@@ -87,7 +83,7 @@ class Doc extends PureComponent{
 
     //下载
     handleDownload = (record) => {
-        let downloadPath = `/qiapi/Files/${record.ID+record.FileExtension}`;
+        let downloadPath = `/qiapi/${record.FileLocation}`;
         window.open(downloadPath);
     }
 
@@ -101,46 +97,82 @@ class Doc extends PureComponent{
                 message.success('已删除');
                 this.getData();
             }
+            else{
+                message.error(res.data.ErrorMessage)
+            }
         })
     }
 
     getData = () => {
-        // axios.post(QueryFiles,{BId:this.Id,module:'资料管理'}).then(res => {
-        //     let data = res.data;
-        //     console.log(data);
-        //     if(data.Status == 'true'){
-        //         this.setState({
-        //             datasource:data.Data.files
-        //         })
-        //     }
-        // })
 
-        const Modules = [
-            {Id:1,ModuleName:'合同'},
-            {Id:2,ModuleName:'会议纪要'},
-            {Id:3,ModuleName:'日常影像资料'},
-            {Id:4,ModuleName:'工程形象进度资料'},
-            {Id:5,ModuleName:'每周工作情况汇总'},
-            {Id:6,ModuleName:'工作联系单',Children:[{Id:101,ModuleName:'总包'},{Id:102,ModuleName:'监理'},{Id:103,ModuleName:'主管部门'}]},
-            {Id:7,ModuleName:'报批报建资料',Children:[{Id:104,ModuleName:'审图报告'},{Id:105,ModuleName:'开工报告'},{Id:106,ModuleName:'施工许可证'},{Id:107,ModuleName:'竣工报告'},{Id:108,ModuleName:'竣工验收证书'}]},
-            {Id:8,ModuleName:'政府相关文件'}
-        ]
+        axios.post(QueryModelByCode,{parenteModuleCode: 100}).then(res => {
+            if(res.data.Status){
+                let Modules = res.data.Data.ModuleManageViewModel;
 
-        const Fixeds = [
-            {Id:104,ModuleName:'审图报告',IsUpload:true},
-            {Id:105,ModuleName:'开工报告',IsUpload:false},
-            {Id:106,ModuleName:'施工许可证',IsUpload:true},
-            {Id:107,ModuleName:'竣工报告',IsUpload:true},
-            {Id:108,ModuleName:'竣工验收证书',IsUpload:false}
-        ]
+                const Fixeds = [
+                    {Id:104,ModuleName:'审图报告',IsUpload:true},
+                    {Id:105,ModuleName:'开工报告',IsUpload:false},
+                    {Id:106,ModuleName:'施工许可证',IsUpload:true},
+                    {Id:107,ModuleName:'竣工报告',IsUpload:true},
+                    {Id:108,ModuleName:'竣工验收证书',IsUpload:false}
+                ]
 
-        setTimeout(() => {
-            this.setState({
-                uploading: false,
-                FixedFiles:Fixeds,
-                DocModules:Modules
-            })
-        },1000)
+                this.setState({
+                    FixedFiles:Fixeds,
+                    DocModules:Modules
+                })
+
+                axios.post(GetModuleData,{bidSectionId: this.Id}).then(result => {
+                    let modules = this.state.DocModules;
+                    //console.log(modules);
+                    debugger;
+                    if(result.data.Status && modules.length >0){
+                        let FileData = result.data.Data.BidSectionDoc;
+                        modules.map(item => {
+                            let moduleCode = item.ModuleCode;
+                            let moduleData = FileData[moduleCode];
+
+                            if(moduleData!=undefined && moduleData.length > 0){
+                                //this.state[moduleCode] = moduleData;
+
+                                var state = {};
+                                state[moduleCode] = moduleData;
+                                this.setState(state);
+                            }
+                            
+                        })
+                    }
+                    else{
+                        message.error(res.data.ErrorMessage)
+                    }
+                })
+            }
+            else{
+                message.error(res.data.ErrorMessage)
+            }
+        })
+
+       
+        // const Modules = [
+        //     {Id:1,ModuleName:'合同'},
+        //     {Id:2,ModuleName:'会议纪要'},
+        //     {Id:3,ModuleName:'日常影像资料'},
+        //     {Id:4,ModuleName:'工程形象进度资料'},
+        //     {Id:5,ModuleName:'每周工作情况汇总'},
+        //     {Id:6,ModuleName:'工作联系单',Children:[{Id:101,ModuleName:'总包'},{Id:102,ModuleName:'监理'},{Id:103,ModuleName:'主管部门'}]},
+        //     {Id:7,ModuleName:'报批报建资料',Children:[{Id:104,ModuleName:'审图报告'},{Id:105,ModuleName:'开工报告'},{Id:106,ModuleName:'施工许可证'},{Id:107,ModuleName:'竣工报告'},{Id:108,ModuleName:'竣工验收证书'}]},
+        //     {Id:8,ModuleName:'政府相关文件'}
+        // ]
+
+        
+
+        // setTimeout(() => {
+        //     this.setState({
+        //         uploading: false,
+        //         FixedFiles:Fixeds,
+        //         DocModules:Modules
+        //     })
+        // },1000)
     }
 
     componentDidMount = () => {
@@ -156,59 +188,75 @@ class Doc extends PureComponent{
 
     //一级文件类型Change事件
     handleFileTypeChange = (value) => {
-        const Children = this.state.DocModules.filter(o => o.Id == value)[0].Children;
+        const Children = this.state.DocModules.filter(o => o.ModuleCode == value)[0].Children;
         if(Children!=undefined && Children.length>0){
             this.setState({
-                FileTypes:Children
+                fileTypes:Children
             })
         }
         this.setState({
-            fileType:value
+            fileType:value,
+            selectCode:value
         })
     }
 
     //二级文件类型Change事件
     handleChildFileTypeChange = (value) => {
         this.setState({
-            childFileType:value
+            childFileType:value,
+            selectCode:value
         })
     }
 
     //提交
     handleSubmit = () => {
-        debugger;
         if(this.state.fileList!=undefined){
             let formData = new FormData();
             //formData.append('file',this.state)
             this.state.fileList.forEach((file) => {
               formData.append('files[]', file);
             });
+           
+            let BidSectionDoc = {
+                ModuleCode:null,
+                FileRemark:this.refs.textRemark.state.value,
+                BidSectionId:this.Id
+            }
     
-            formData.append('BId',this.Id);
-            formData.append('remark',this.refs.textRemark.state.value);
+            formData.append('FileRemark',this.refs.textRemark.state.value);
+            formData.append('ModuleCode',parseInt(this.state.selectCode));
+            formData.append('BidSectionId',this.Id);
 
             this.setState({
                 uploading: true,
+            });
+
+            const config = {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+            }
+    
+            axios.post(UploadFiles,formData,config).then(res => {
+                this.setState({
+                  fileList: [],
+                  uploading: false,
+                  visible:false
+                });
+                //console.log(res);
+                if(res.data.Status){
+                    this.getData();
+                }else{
+                    message.error(res.data.ErrorMessage)
+                }
             })
         }
-  
+        
+        
 
-        this.setState({
-
-            visible:false,
-          });
     }
 
     render(){
-
-        let datahyjy = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '会议纪要'):null;
-        let dataphoto = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '日常照片'):null;
-        let datagczl = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '工程资料形象管理'):null;
-        let dataweekly = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '每周工作情况汇总'):null;
-        let datacontact = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '相关工作联系单'):null;
-        let databjzl = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '相关报批报建资料'):null;
-        let datazfwj = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '政府相关文件'):null;
-
         const formItemLayout = {
             labelCol: { span: 4 },
             wrapperCol: { span: 18 },
@@ -235,7 +283,7 @@ class Doc extends PureComponent{
                 }
 
                 this.setState(state => ({
-                fileList: [...state.fileList, file],
+                    fileList: [...state.fileList, file],
                 }));
                 return false;
             },
@@ -245,12 +293,13 @@ class Doc extends PureComponent{
         return(
             <PageHeaderWrapper  title='资料管理' >
                 <Card title='固定资料'>
+                    {/* <Button onClick={()=>{console.log(this.state)}} /> */}
                     <table style={{width:'100%',textAlign:'center'}}>
                         <thead>
                             <tr>
                                 {this.state.FixedFiles.length>0?this.state.FixedFiles.map(item => {
                                     return (
-                                        <th>{item.ModuleName}</th>
+                                        <th key={item.Id}>{item.ModuleName}</th>
                                     )
                                 }):null}
                             </tr>
@@ -259,7 +308,7 @@ class Doc extends PureComponent{
                             <tr>
                                 {this.state.FixedFiles.length>0?this.state.FixedFiles.map(item => {
                                     return (
-                                        <td>{item.IsUpload?'已上传':'-'}</td>
+                                        <td key={item.Id}>{item.IsUpload?'已上传':'-'}</td>
                                     )
                                 }):null}
                             </tr>
@@ -273,13 +322,15 @@ class Doc extends PureComponent{
                     {this.state.DocModules.length>0?
                     this.state.DocModules.map(item => {
                         return(
+                            
                             <div key={item.Id}>
                                 <Divider />
                                 <Table
                                     title={() => <h4><Icon type="book" style={{marginRight:'10px'}}/>{item.ModuleName}</h4>}
                                     size='small'
-                                    rowKey={record => record.ID}
+                                    rowKey={record => record.ModuleCode}
                                     columns={this.tableCols}
+                                    dataSource={this.state[item.ModuleCode]!=undefined?this.state[item.ModuleCode]:null}
                                 >
                                 </Table>
                             </div>
@@ -295,8 +346,9 @@ class Doc extends PureComponent{
                     onCancel={()=>{this.setState({visible:false})}}
                     destroyOnClose={true}
                 >
-                    <Form>
+                    <Form onSubmit={this.handleSubmit}>
                         <Form.Item
+                            key="文件类型"
                             {...formItemLayout}
                             label="文件类型"
                         >
@@ -305,7 +357,7 @@ class Doc extends PureComponent{
                                     this.state.DocModules.length>0?
                                     this.state.DocModules.map(item => {
                                         return(
-                                            <Option key={item.Id}>
+                                            <Option key={item.ModuleCode}>
                                                 {item.ModuleName}
                                             </Option>
                                         )
@@ -313,10 +365,10 @@ class Doc extends PureComponent{
                                 }
                             </Select>
                             {
-                                this.state.FileTypes!=undefined?
+                                this.state.fileTypes != undefined?
                                 (
                                     <Select style={{width:'160px',marginLeft:'10px'}} onChange={this.handleChildFileTypeChange}>
-                                        {this.state.FileTypes.map(item => {
+                                        {this.state.fileTypes.map(item => {
                                             return (
                                                 <Option key={item.Id}>
                                                     {item.ModuleName}
@@ -329,14 +381,16 @@ class Doc extends PureComponent{
                             
                         </Form.Item>
                         <Form.Item
+                            key="文件说明"
                             {...formItemLayout}
                             label="文件说明"
                         >
                             <Input  ref='textRemark'/>
                         </Form.Item>
                         <Form.Item
-                        {...formItemLayout}
-                        label="上传"
+                            key="文件上传"
+                            {...formItemLayout}
+                            label="文件上传"
                         >
                             <Upload {...uploadprops} >
                                 <Button>

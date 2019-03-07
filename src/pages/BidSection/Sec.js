@@ -2,6 +2,7 @@ import React,{ PureComponent, Fragment } from 'react';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { Upload, Button, Icon, message, Card, Table, Divider, Popconfirm, Modal, Select, Row, Col, Form, Input, Radio } from 'antd';
 import { GetQSByBID,DeleteQS} from '../../services/bidSection';
+import { QueryModelByCode } from '@/services/module';
 import axios from 'axios';
 
 function GetDateFormat(str) { 
@@ -118,12 +119,16 @@ class Sec extends PureComponent{
             {Id:7,ModuleName:'奖罚情况',Children:[]}
         ]
 
-        setTimeout(() => {
-            this.setState({
-                uploading: false,
-                SecModules:Modules
-            })
-        },1000)
+        axios.post(QueryModelByCode,{parenteModuleCode: 300}).then(res => {
+            if(res.data.Status){
+                let Modules = res.data.Data.ModuleManageViewModel;
+
+                this.setState({
+                    SecModules:Modules
+                })
+            }
+        })
+
     }
 
     componentDidMount = () =>{

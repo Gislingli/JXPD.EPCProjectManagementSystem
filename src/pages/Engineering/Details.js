@@ -125,6 +125,7 @@ class Details extends Component {
   //标段详情
   handleBidDetails = (record) => {
     const Id = record.Id;
+    router.push('/bidSection/list/details/'+Id);
   }
 
   handleBidDelete = (record) => {

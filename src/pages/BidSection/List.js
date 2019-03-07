@@ -101,7 +101,7 @@ class List extends Component{
             const data = res.data;
             if(data.Status){
                 this.setState({
-                    datasource:data.Data.BidSection
+                    datasource:data.Data.BidSectionPlainViewModel
                 });
             }
         })
@@ -136,7 +136,7 @@ class List extends Component{
     //详情
     handleDetails = (record) =>{
         const Id = record.Id;
-        router.push('/bidSection/details/'+Id);
+        router.push('/bidSection/list/details/'+Id);
     }
 
     //删除
