@@ -67,12 +67,12 @@ class Doc extends PureComponent{
                                 <Icon type="download" />下载
                             </a>
                         </Popconfirm>
-                        <Divider type="vertical" />
+                        {/* <Divider type="vertical" />
                         <Popconfirm title="确定删除?" onConfirm={this.handleDeleteBid.bind(this,record)}>
                             <a href="javascript:;">
                                 <Icon type="delete" />删除
                             </a>
-                        </Popconfirm>
+                        </Popconfirm> */}
                     </span>
                 )
             }
@@ -83,7 +83,7 @@ class Doc extends PureComponent{
 
     //下载
     handleDownload = (record) => {
-        let downloadPath = `/qiapi/Files/${record.ID+record.FileExtension}`;
+        let downloadPath = `/qiapi/${record.FileLocation}`;
         window.open(downloadPath);
     }
 
@@ -97,19 +97,13 @@ class Doc extends PureComponent{
                 message.success('已删除');
                 this.getData();
             }
+            else{
+                message.error(res.data.ErrorMessage)
+            }
         })
     }
 
     getData = () => {
-        // axios.post(QueryFiles,{BId:this.Id,module:'资料管理'}).then(res => {
-        //     let data = res.data;
-        //     console.log(data);
-        //     if(data.Status == 'true'){
-        //         this.setState({
-        //             datasource:data.Data.files
-        //         })
-        //     }
-        // })
 
         axios.post(QueryModelByCode,{parenteModuleCode: 100}).then(res => {
             if(res.data.Status){
@@ -148,7 +142,13 @@ class Doc extends PureComponent{
                             
                         })
                     }
+                    else{
+                        message.error(res.data.ErrorMessage)
+                    }
                 })
+            }
+            else{
+                message.error(res.data.ErrorMessage)
             }
         })
 
@@ -188,7 +188,7 @@ class Doc extends PureComponent{
 
     //一级文件类型Change事件
     handleFileTypeChange = (value) => {
-        const Children = this.state.DocModules.filter(o => o.Id == value)[0].Children;
+        const Children = this.state.DocModules.filter(o => o.ModuleCode == value)[0].Children;
         if(Children!=undefined && Children.length>0){
             this.setState({
                 fileTypes:Children
@@ -211,7 +211,6 @@ class Doc extends PureComponent{
     //提交
     handleSubmit = () => {
         if(this.state.fileList!=undefined){
-            console.log(this.state.fileList)
             let formData = new FormData();
             //formData.append('file',this.state)
             this.state.fileList.forEach((file) => {
@@ -239,15 +238,16 @@ class Doc extends PureComponent{
             }
     
             axios.post(UploadFiles,formData,config).then(res => {
-                debugger;
-                console.log(this.state.selectCode)
                 this.setState({
                   fileList: [],
                   uploading: false,
+                  visible:false
                 });
                 //console.log(res);
                 if(res.data.Status){
                     this.getData();
+                }else{
+                    message.error(res.data.ErrorMessage)
                 }
             })
         }
@@ -257,15 +257,6 @@ class Doc extends PureComponent{
     }
 
     render(){
-
-        let datahyjy = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '会议纪要'):null;
-        let dataphoto = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '日常照片'):null;
-        let datagczl = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '工程资料形象管理'):null;
-        let dataweekly = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '每周工作情况汇总'):null;
-        let datacontact = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '相关工作联系单'):null;
-        let databjzl = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '相关报批报建资料'):null;
-        let datazfwj = this.state.datasource.length>0?this.state.datasource.filter(item => item.FileType == '政府相关文件'):null;
-
         const formItemLayout = {
             labelCol: { span: 4 },
             wrapperCol: { span: 18 },
@@ -299,13 +290,10 @@ class Doc extends PureComponent{
             fileList,
         }
 
-        const fData = [{"ModuleCode":"100600","ModuleName":"总包","FileOriginalName":"通讯册2.15.xlsx","FileRemark":"测试","LoadPerson":"","LoadDate":"2019-03-05 15:11:20"},{"ModuleCode":"1006","ModuleName":"工作联系单","FileOriginalName":"avatar-c.png","FileRemark":"132123","LoadPerson":"","LoadDate":"2019-03-06 10:17:26"}];
-
         return(
             <PageHeaderWrapper  title='资料管理' >
                 <Card title='固定资料'>
-                    {/* <Button onClick={()=>{console.log(JSON.stringify(this.state[1006]))}}/> */}
-                    <Button onClick={()=>{console.log(this.state)}} />
+                    {/* <Button onClick={()=>{console.log(this.state)}} /> */}
                     <table style={{width:'100%',textAlign:'center'}}>
                         <thead>
                             <tr>
@@ -333,7 +321,6 @@ class Doc extends PureComponent{
                     </Button>
                     {this.state.DocModules.length>0?
                     this.state.DocModules.map(item => {
-                        console.log(item.ModuleCode)
                         return(
                             
                             <div key={item.Id}>
@@ -361,6 +348,7 @@ class Doc extends PureComponent{
                 >
                     <Form onSubmit={this.handleSubmit}>
                         <Form.Item
+                            key="文件类型"
                             {...formItemLayout}
                             label="文件类型"
                         >
@@ -393,14 +381,16 @@ class Doc extends PureComponent{
                             
                         </Form.Item>
                         <Form.Item
+                            key="文件说明"
                             {...formItemLayout}
                             label="文件说明"
                         >
                             <Input  ref='textRemark'/>
                         </Form.Item>
                         <Form.Item
-                        {...formItemLayout}
-                        label="上传"
+                            key="文件上传"
+                            {...formItemLayout}
+                            label="文件上传"
                         >
                             <Upload {...uploadprops} >
                                 <Button>
