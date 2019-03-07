@@ -15,7 +15,6 @@ class Doc extends PureComponent{
     constructor(props){
         super(props);
         this.state={
-            datasource:[],
             DocModules:[],
             FixedFiles:[],
             fileList: [],
@@ -98,7 +97,7 @@ class Doc extends PureComponent{
                 this.getData();
             }
             else{
-                message.error(res.data.ErrorMessage)
+                console.log(res.data.ErrorMessage);
             }
         })
     }
@@ -143,12 +142,12 @@ class Doc extends PureComponent{
                         })
                     }
                     else{
-                        message.error(res.data.ErrorMessage)
+                        console.log(res.data.ErrorMessage);
                     }
                 })
             }
             else{
-                message.error(res.data.ErrorMessage)
+                console.log(res.data.ErrorMessage);
             }
         })
 
@@ -245,15 +244,16 @@ class Doc extends PureComponent{
                 });
                 //console.log(res);
                 if(res.data.Status){
+                    message.success('上传成功');
                     this.getData();
-                }else{
-                    message.error(res.data.ErrorMessage)
+                }
+                else{
+                    console.log(res.data.ErrorMessage);
                 }
             })
         }
-        
-        
 
+        this.setState({ visible:false });
     }
 
     render(){
@@ -370,7 +370,7 @@ class Doc extends PureComponent{
                                     <Select style={{width:'160px',marginLeft:'10px'}} onChange={this.handleChildFileTypeChange}>
                                         {this.state.fileTypes.map(item => {
                                             return (
-                                                <Option key={item.Id}>
+                                                <Option key={item.ModuleCode}>
                                                     {item.ModuleName}
                                                 </Option>
                                             )
