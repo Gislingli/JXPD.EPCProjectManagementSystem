@@ -152,11 +152,20 @@
                     <Description term='投资估算'>{this.state.datasource.Investment}</Description>
                     <Description term='合同金额'>{this.state.datasource.ContractValue}</Description>
                     <Description term='实际投入金额'>{this.state.datasource.ActualValue}</Description>
+                    <Description term='投资进度'>{this.state.datasource.InvestmentPercentage+'%'}</Description>
                     <Description term='实施年限'>{this.state.datasource.ConDate}</Description>
                     <Description term='牵头单位'>{this.state.datasource.LeaderDepart}</Description>
                     <Description term='建设内容'>{this.state.datasource.ConContent}</Description>
                     <Description term='实施主体'>{this.state.datasource.ConDepart}</Description>
                     <Description term='建设性质'>{this.state.datasource.ConProperty}</Description>
+                     <Description term='备注'>{this.state.datasource.Remark}</Description>
+                     <Description term='图面显示'>{this.state.datasource.ImageView}</Description>
+                </DescriptionList>
+                
+            </Card>
+            <Card title='时间信息' style={{ margin: '15px 0' }}>
+                <DescriptionList>
+  
                     <Description term='谋划时间'>{this.state.datasource.IdeaDate}</Description>
                     <Description term='规划时间'>{this.state.datasource.PlanDate}</Description>
                     <Description term='立项时间'>{this.state.datasource.SetupDate}</Description>
@@ -165,8 +174,7 @@
                     <Description term='计划施工开始时间'>{this.state.datasource.ConStartDate}</Description>
                     <Description term='计划施工结束时间'>{this.state.datasource.ConEndDate}</Description>
                      <Description term='计划竣工验收时间'>{this.state.datasource.CheckDate}</Description>
-                     <Description term='备注'>{this.state.datasource.Remark}</Description>
-                     <Description term='图面显示'>{this.state.datasource.ImageView}</Description>
+
                 </DescriptionList>
                 
             </Card>

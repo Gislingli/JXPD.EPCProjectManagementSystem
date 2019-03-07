@@ -53,9 +53,10 @@ export default [
         path:'/projects',
         name:'项目',
         icon:'home',
+        hideInMenu:true,
         routes:[
           {
-            path:'/projects/list',
+            path:'/projects/list/:id',
             name:'项目清单',
             component:'./Projects/List',
        

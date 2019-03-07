@@ -247,7 +247,7 @@ class Progress extends PureComponent{
 
                 </Card>
                 <Card title='进度情况甘特图' style={{ margin: '15px 0' }}>
-                <Chart
+                {/* <Chart
   width={'100%'}
   height={'400px'}
   chartType="Gantt"
@@ -370,7 +370,7 @@ class Progress extends PureComponent{
     },
   }}
   rootProps={{ 'data-testid': '2' }}
-/>
+/> */}
                 </Card>
                 <Modal
           title="新增"

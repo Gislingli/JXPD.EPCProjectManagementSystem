@@ -12,6 +12,7 @@ class List extends PureComponent{
             datasource:[
         ],loading:true
         }
+        this.Id = this.props.match.params.id;
     }
      /*表头*/
      tableCols = () => {
@@ -277,7 +278,7 @@ class List extends PureComponent{
     }
         /*查询项目*/
         formProjectByName = (queryContent) => {
-            debugger
+            
 }
 handleDelete=(record)=>{
 
@@ -285,12 +286,12 @@ handleDelete=(record)=>{
 }
 handleDetails=(record)=>{
 
-debugger
+
     router.push('/projects/list/details/'+record.Id)
 }
     /*获取数据*/
     getData = () => {
-        axios.post(ProjectList).then((res) => {
+        axios.post(ProjectList,{id :this.Id}).then((res) => {
    
             if(res.data.Status){
                 this.setState({
