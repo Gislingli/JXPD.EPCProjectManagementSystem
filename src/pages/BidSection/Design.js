@@ -1,7 +1,7 @@
 import React,{ PureComponent, Fragment } from 'react';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { Upload, Button, Icon, message, Card, Table, Divider, Popconfirm, Modal, Select, Row, Col, Form, Input } from 'antd';
-import { addFiles,deleteFiles,QueryFiles} from '../../services/bidSection';
+import { QueryModelByCode } from '@/services/module';
 import axios from 'axios';
 
 function GetDateFormat(str) { 
@@ -104,28 +104,22 @@ class Design extends PureComponent{
     }
 
     getData = () => {
-        // axios.post(QueryFiles,{BId:this.Id,module:'资料管理'}).then(res => {
-        //     let data = res.data;
-        //     console.log(data);
-        //     if(data.Status == 'true'){
-        //         this.setState({
-        //             datasource:data.Data.files
-        //         })
-        //     }
-        // })
 
-        const Modules = [
-            {Id:1,ModuleName:'施工图'},
-            {Id:2,ModuleName:'设计变更管理'},
-            {Id:3,ModuleName:'洽商记录管理'},
-        ]
+        // const Modules = [
+        //     {Id:1,ModuleName:'施工图'},
+        //     {Id:2,ModuleName:'设计变更管理'},
+        //     {Id:3,ModuleName:'洽商记录管理'},
+        // ]
 
-        setTimeout(() => {
-            this.setState({
-                uploading: false,
-                DesignModules:Modules
-            })
-        },1000)
+        axios.post(QueryModelByCode,{parenteModuleCode: 200}).then(res => {
+            if(res.data.Status){
+                let Modules = res.data.Data.ModuleManageViewModel;
+
+                this.setState({
+                    DesignModules:Modules
+                })
+            }
+        })
     }
 
     componentDidMount = () => {

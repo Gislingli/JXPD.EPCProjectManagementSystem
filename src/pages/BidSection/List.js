@@ -101,7 +101,7 @@ class List extends Component{
             const data = res.data;
             if(data.Status){
                 this.setState({
-                    datasource:data.Data.BidSection
+                    datasource:data.Data.BidSectionPlainViewModel
                 });
             }
         })

@@ -146,7 +146,7 @@ class List extends Component{
             debugger;
             let result = res.data;
             if(result.Status){
-                const data = result.Data.EngineeringViewModel;
+                const data = result.Data.EngineeringPlainViewModel;
                 this.setState({
                     datasource:data,
                     area:areaData
