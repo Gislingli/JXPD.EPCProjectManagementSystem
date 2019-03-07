@@ -1,8 +1,8 @@
 import React,{ PureComponent, Fragment } from 'react';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { Upload, Button, Icon, message, Card, Table, Divider, Popconfirm, Modal, Select, Row, Col, Form, Input, Radio } from 'antd';
-import { GetQSByBID,DeleteQS} from '../../services/bidSection';
 import { QueryModelByCode } from '@/services/module';
+import { GetModuleData,UploadFiles } from '@/services/bidSectionSec';
 import axios from 'axios';
 
 function GetDateFormat(str) { 
@@ -17,10 +17,11 @@ class Sec extends PureComponent{
         
         super(props);
         this.state={
-            datasource:[],
+            SecModules:[],
+            fileList: [],
+            selectCode:'',
             visible:false,
             uploading: false,
-            SecModules:[],
         }
         this.Id = this.props.match.params.id;
         this.tableCols=[
@@ -32,28 +33,29 @@ class Sec extends PureComponent{
             },
             {
                 title:'文件类型',
-                dataIndex:'FileType',
-                key:'FileType'
+                dataIndex:'ModuleName',
+                key:'ModuleName'
             },
             {
                 title:'文件名称',
-                dataIndex:'FileName',
-                key:'FileName'
+                dataIndex:'FileOriginalName',
+                key:'FileOriginalName   '
             },
             {
                 title:'文件说明',
-                dataIndex:'Remark',
-                key:'Remark'
+                dataIndex:'FileRemark',
+                key:'FileRemark'
             },
             {
                 title:'是否合格',
-                dataIndex:'IsQualified',
-                key:'IsQualified'
-            },
-            {
-                title:'文件格式',
-                dataIndex:'FileExtension',
-                key:'FileExtension'
+                dataIndex:'IsConformity',
+                key:'IsConformity',
+                render:(text) => {
+                    if(text)
+                        return (<label style={{color:'green'}}>合格</label>)
+                    else
+                        return (<label style={{color:'red'}}>不合格</label>)
+                }
             },
             {
                 title:'上传人员',
@@ -64,20 +66,23 @@ class Sec extends PureComponent{
                 title:'上传时间',
                 dataIndex:'LoadDate',
                 key:'LoadDate',
-                render:(text) => {
-                    return GetDateFormat(text)
-                }
             },
             {
                 title:'操作',
                 key:'action',
                 render:(text,record) => (
                     <span>
+                        <Popconfirm title="确定下载?" onConfirm={this.handleDownload.bind(this,record)}>
+                            <a href="javascript:;">
+                                <Icon type="download" />下载
+                            </a>
+                        </Popconfirm>
+                        {/* <Divider type="vertical" />
                         <Popconfirm title="确定删除?" onConfirm={this.handleDeleteBid.bind(this,record)}>
                             <a href="javascript:;">
                                 <Icon type="delete" />删除
                             </a>
-                        </Popconfirm>
+                        </Popconfirm> */}
                     </span>
                 )
             }
@@ -87,7 +92,7 @@ class Sec extends PureComponent{
 
     //下载
     handleDownload = (record) => {
-        let downloadPath = `/qiapi/Files/${record.ID+record.FileExtension}`;
+        let downloadPath = `/qiapi/${record.FileLocation}`;
         window.open(downloadPath);
     }
 
@@ -109,15 +114,15 @@ class Sec extends PureComponent{
      }
 
     getData = () =>{
-        const Modules = [
-            {Id:1,ModuleName:'单位备案情况'},
-            {Id:2,ModuleName:'质安交底情况'},
-            {Id:3,ModuleName:'质安检查情况'},
-            {Id:4,ModuleName:'突发（特殊）事件处理情况'},
-            {Id:5,ModuleName:'原材料抽检情况'},
-            {Id:6,ModuleName:'关键节点内部验收情况',Children:[]},
-            {Id:7,ModuleName:'奖罚情况',Children:[]}
-        ]
+        // const Modules = [
+        //     {Id:1,ModuleName:'单位备案情况'},
+        //     {Id:2,ModuleName:'质安交底情况'},
+        //     {Id:3,ModuleName:'质安检查情况'},
+        //     {Id:4,ModuleName:'突发（特殊）事件处理情况'},
+        //     {Id:5,ModuleName:'原材料抽检情况'},
+        //     {Id:6,ModuleName:'关键节点内部验收情况',Children:[]},
+        //     {Id:7,ModuleName:'奖罚情况',Children:[]}
+        // ]
 
         axios.post(QueryModelByCode,{parenteModuleCode: 300}).then(res => {
             if(res.data.Status){
@@ -126,6 +131,34 @@ class Sec extends PureComponent{
                 this.setState({
                     SecModules:Modules
                 })
+
+                axios.post(GetModuleData,{bidSectionId: this.Id}).then(result => {
+                    let modules = this.state.SecModules;
+                    //console.log(modules);
+                    debugger;
+                    if(result.data.Status && modules.length >0){
+                        let FileData = result.data.Data.BitSectionQualitySafe;
+                        modules.map(item => {
+                            let moduleCode = item.ModuleCode;
+                            let moduleData = FileData[moduleCode];
+
+                            if(moduleData!=undefined && moduleData.length > 0){
+                                //this.state[moduleCode] = moduleData;
+
+                                var state = {};
+                                state[moduleCode] = moduleData;
+                                this.setState(state);
+                            }
+                            
+                        })
+                    }
+                    else{
+                        console.log(res.data.ErrorMessage);
+                    }
+                })
+            }
+            else{
+                console.log(res.data.ErrorMessage);
             }
         })
 
@@ -145,7 +178,7 @@ class Sec extends PureComponent{
 
     //一级文件类型Change事件
     handleFileTypeChange = (value) => {
-        const Children = this.state.SecModules.filter(o => o.Id == value)[0].Children;
+        const Children = this.state.SecModules.filter(o => o.ModuleCode == value)[0].Children;
         if(Children!=undefined && Children.length>0){
             this.setState({
                 FileTypes:Children
@@ -153,45 +186,68 @@ class Sec extends PureComponent{
         }
         
         this.setState({
-            fileType:value
+            fileType:value,
+            selectCode:value
         })
     }
 
     //二级文件类型Change事件
     handleChildFileTypeChange = (value) => {
         this.setState({
-            childFileType:value
+            childFileType:value,
+            selectCode:value
         })
     }
 
     //是否合格
-    handleQualifiedChange = (value) => {
-        this.setState({Qualified:value});
+    handleQualifiedChange = (e) => {
+        const value = e.target.value;
+        this.setState({Qualified: value});
     }
 
     //提交
     handleSubmit = () => {
-        debugger;
-        if(this.state.fileList!=undefined){
+        if(this.state.fileList.length>0){
             let formData = new FormData();
             //formData.append('file',this.state)
             this.state.fileList.forEach((file) => {
               formData.append('files[]', file);
             });
-    
-            formData.append('BId',this.Id);
-            formData.append('remark',this.refs.textRemark.state.value);
+            debugger;
+            console.log(this.state);
+            formData.append('FileRemark',this.refs.textRemark.state.value);
+            formData.append('ModuleCode',parseInt(this.state.selectCode));
+            formData.append('BidSectionId',this.Id);
+            formData.append('IsConformity',this.state.Qualified);
 
             this.setState({
                 uploading: true,
             })
+
+            const config = {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+            }
+
+            axios.post(UploadFiles,formData,config).then(res => {
+                this.setState({
+                  fileList: [],
+                  uploading: false,
+                });
+                //console.log(res);
+                if(res.data.Status){
+                    this.getData();
+                }else{
+                    console.log(res.data.ErrorMessage);
+                }
+            })
+        }
+        else{
+            message.error('必须上传附件 (。・＿・。)ﾉ');
         }
   
-
-        this.setState({
-
-            visible:false,
-          });
+        this.setState({ visible:false });
     }
 
     render(){
@@ -244,8 +300,9 @@ class Sec extends PureComponent{
                                 <Table
                                     title={() => <h4><Icon type="book" style={{marginRight:'10px'}}/>{item.ModuleName}</h4>}
                                     size='small'
-                                    rowKey={record => record.ID}
+                                    rowKey={record => record.LoadDate}
                                     columns={this.tableCols}
+                                    dataSource={this.state[item.ModuleCode]!=undefined?this.state[item.ModuleCode]:null}
                                 >
                                 </Table>
                             </div>
@@ -271,7 +328,7 @@ class Sec extends PureComponent{
                                     this.state.SecModules.length>0?
                                     this.state.SecModules.map(item => {
                                         return(
-                                            <Option key={item.Id}>
+                                            <Option key={item.ModuleCode}>
                                                 {item.ModuleName}
                                             </Option>
                                         )
@@ -284,7 +341,7 @@ class Sec extends PureComponent{
                                     <Select style={{width:'160px',marginLeft:'10px'}} onChange={this.handleChildFileTypeChange}>
                                         {this.state.FileTypes.map(item => {
                                             return (
-                                                <Option key={item.Id}>
+                                                <Option key={item.ModuleCode}>
                                                     {item.ModuleName}
                                                 </Option>
                                             )
@@ -304,9 +361,9 @@ class Sec extends PureComponent{
                             {...formItemLayout}
                             label="是否合格"
                         >
-                            <RadioGroup onChange={this.handleQualifiedChange}>
+                            <RadioGroup onChange={this.handleQualifiedChange} defaultValue='false'>
                                 <Radio value={true}>合格</Radio>
-                                <Radio value={false}>不合格</Radio>
+                                <Radio value={'false'}>不合格</Radio>
                             </RadioGroup>
                         </Form.Item>
                         <Form.Item

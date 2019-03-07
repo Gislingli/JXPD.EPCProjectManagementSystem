@@ -2,6 +2,7 @@ import React,{ PureComponent, Fragment } from 'react';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { Upload, Button, Icon, message, Card, Table, Divider, Popconfirm, Modal, Select, Row, Col, Form, Input } from 'antd';
 import { QueryModelByCode } from '@/services/module';
+import { GetModuleData,UploadFiles } from '@/services/bidSectionDoc';
 import axios from 'axios';
 
 function GetDateFormat(str) { 
@@ -14,10 +15,11 @@ class Design extends PureComponent{
     constructor(props){
         super(props);
         this.state={
-            datasource:[],
             DesignModules:[],
-            uploading: false,
+            fileList: [],
+            selectCode:'',
             visible:false,
+            uploading: false,
         }
         this.Id = this.props.match.params.id;
         this.tableCols=[
@@ -29,23 +31,18 @@ class Design extends PureComponent{
             },
             {
                 title:'文件类型',
-                dataIndex:'FileType',
-                key:'FileType'
+                dataIndex:'ModuleName',
+                key:'ModuleName'
             },
             {
                 title:'文件名称',
-                dataIndex:'FileName',
-                key:'FileName'
+                dataIndex:'FileOriginalName',
+                key:'FileOriginalName'
             },
             {
                 title:'文件说明',
-                dataIndex:'Remark',
-                key:'Remark'
-            },
-            {
-                title:'文件格式',
-                dataIndex:'FileExtension',
-                key:'FileExtension'
+                dataIndex:'FileRemark',
+                key:'FileRemark'
             },
             {
                 title:'上传人员',
@@ -55,10 +52,7 @@ class Design extends PureComponent{
             {
                 title:'上传时间',
                 dataIndex:'LoadDate',
-                key:'LoadDate',
-                render:(text) => {
-                    return GetDateFormat(text)
-                }
+                key:'LoadDate'
             },
             {
                 title:'操作',
@@ -70,12 +64,12 @@ class Design extends PureComponent{
                                 <Icon type="download" />下载
                             </a>
                         </Popconfirm>
-                        <Divider type="vertical" />
+                        {/* <Divider type="vertical" />
                         <Popconfirm title="确定删除?" onConfirm={this.handleDeleteBid.bind(this,record)}>
                             <a href="javascript:;">
                                 <Icon type="delete" />删除
                             </a>
-                        </Popconfirm>
+                        </Popconfirm> */}
                     </span>
                 )
             }
@@ -86,7 +80,7 @@ class Design extends PureComponent{
 
     //下载
     handleDownload = (record) => {
-        let downloadPath = `/qiapi/Files/${record.ID+record.FileExtension}`;
+        let downloadPath = `/qiapi/${record.FileLocation}`;
         window.open(downloadPath);
     }
 
@@ -118,6 +112,34 @@ class Design extends PureComponent{
                 this.setState({
                     DesignModules:Modules
                 })
+
+                axios.post(GetModuleData,{bidSectionId: this.Id}).then(result => {
+                    let modules = this.state.DesignModules;
+                    //console.log(modules);
+                    debugger;
+                    if(result.data.Status && modules.length >0){
+                        let FileData = result.data.Data.BidSectionDoc;
+                        modules.map(item => {
+                            let moduleCode = item.ModuleCode;
+                            let moduleData = FileData[moduleCode];
+
+                            if(moduleData!=undefined && moduleData.length > 0){
+                                //this.state[moduleCode] = moduleData;
+
+                                var state = {};
+                                state[moduleCode] = moduleData;
+                                this.setState(state);
+                            }
+                            
+                        })
+                    }
+                    else{
+                        console.log(res.data.ErrorMessage);
+                    }
+                })
+            }
+            else{
+                console.log(res.data.ErrorMessage);
             }
         })
     }
@@ -135,27 +157,28 @@ class Design extends PureComponent{
 
     //一级文件类型Change事件
     handleFileTypeChange = (value) => {
-        const Children = this.state.DesignModules.filter(o => o.Id == value)[0].Children;
+        const Children = this.state.DesignModules.filter(o => o.ModuleCode == value)[0].Children;
         if(Children!=undefined && Children.length>0){
             this.setState({
                 FileTypes:Children
             })
         }
         this.setState({
-            fileType:value
+            fileType:value,
+            selectCode:value
         })
     }
 
     //二级文件类型Change事件
     handleChildFileTypeChange = (value) => {
         this.setState({
-            childFileType:value
+            childFileType:value,
+            selectCode:value
         })
     }
 
     //提交
     handleSubmit = () => {
-        debugger;
         if(this.state.fileList!=undefined){
             let formData = new FormData();
             //formData.append('file',this.state)
@@ -163,19 +186,36 @@ class Design extends PureComponent{
               formData.append('files[]', file);
             });
     
-            formData.append('BId',this.Id);
-            formData.append('remark',this.refs.textRemark.state.value);
+            formData.append('FileRemark',this.refs.textRemark.state.value);
+            formData.append('ModuleCode',parseInt(this.state.selectCode));
+            formData.append('BidSectionId',this.Id);
 
             this.setState({
                 uploading: true,
             })
+
+            const config = {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+            }
+    
+            axios.post(UploadFiles,formData,config).then(res => {
+                this.setState({
+                  fileList: [],
+                  uploading: false,
+                  visible:false
+                });
+                //console.log(res);
+                if(res.data.Status){
+                    this.getData();
+                }else{
+                    console.log(res.data.ErrorMessage);
+                }
+            })
         }
   
-
-        this.setState({
-
-            visible:false,
-          });
+        this.setState({ visible:false });
     }
 
     render(){
@@ -226,8 +266,9 @@ class Design extends PureComponent{
                                 <Table
                                     title={() => <h4><Icon type="book" style={{marginRight:'10px'}}/>{item.ModuleName}</h4>}
                                     size='small'
-                                    rowKey={record => record.ID}
+                                    rowKey={record => record.ModuleCode}
                                     columns={this.tableCols}
+                                    dataSource={this.state[item.ModuleCode]!=undefined?this.state[item.ModuleCode]:null}
                                 >
                                 </Table>
                             </div>
@@ -245,6 +286,7 @@ class Design extends PureComponent{
                 >
                     <Form>
                         <Form.Item
+                            key="文件类型"
                             {...formItemLayout}
                             label="文件类型"
                         >
@@ -253,7 +295,7 @@ class Design extends PureComponent{
                                     this.state.DesignModules.length>0?
                                     this.state.DesignModules.map(item => {
                                         return(
-                                            <Option key={item.Id}>
+                                            <Option key={item.ModuleCode}>
                                                 {item.ModuleName}
                                             </Option>
                                         )
@@ -266,7 +308,7 @@ class Design extends PureComponent{
                                     <Select style={{width:'160px',marginLeft:'10px'}} onChange={this.handleChildFileTypeChange}>
                                         {this.state.FileTypes.map(item => {
                                             return (
-                                                <Option key={item.Id}>
+                                                <Option key={item.ModuleCode}>
                                                     {item.ModuleName}
                                                 </Option>
                                             )
